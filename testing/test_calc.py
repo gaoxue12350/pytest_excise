@@ -1,30 +1,47 @@
 import pytest
+import yaml
 
-from pythoncode.calculator import Calculator
+
+def get_datas():
+    with open("./datas/calc.yml") as f:
+        datas = yaml.safe_load(f)
+    add_datas = datas['add']['datas']
+    add_ids = datas['add']['ids']
+    sub_datas = datas['sub']['datas']
+    sub_ids = datas['sub']['ids']
+    mul_datas = datas['mul']['datas']
+    mul_ids = datas['mul']['ids']
+    div_datas = datas['div']['datas']
+    div_ids = datas['div']['ids']
+    print(add_datas, add_ids)
+    return [add_datas, add_ids, sub_datas, sub_ids, mul_datas, mul_ids, div_datas, div_ids]
 
 
 class TestCalc:
-    def setup_class(self):
-        print('计算开始')
-        self.calc = Calculator()
 
-    def teardown_class(self):
-        print('计算结束')
-
-    @pytest.mark.parametrize('a,b,expect', [
-        [1, 1, 2], [100, 100, 200], [0.1, 0.1, 0.2], [-1, -1, -2], [0, 100, 100], [1 / 2, 1 / 4, 3 / 4],
-        [1 / 3, 1 / 4, 7 / 12], [1 / 5, 1 / 7, 12 / 35]
-    ], ids=['int', 'bigint', 'float', 'minus', 'zero', 'fraction1', 'fraction2', 'fraction3'])
-    def test_add(self, a, b, expect):
+    @pytest.mark.run(order=0)
+    @pytest.mark.parametrize('a,b,expect', get_datas()[0], ids=get_datas()[1])
+    def test_add(self, get_calc, a, b, expect):
         # calc=Calculator()
-        result = self.calc.add(a, b)
+        result = get_calc.add(a, b)
         assert result == expect
 
-    @pytest.mark.parametrize('a,b,expect', [
-        [1, 1, 1], [1, 2, 0.5], [0.1, 0.2, 0.5], [1, 3, 1 / 3], [7, 12, 1 / 12], [2, 1, 2], [0, 1, 0], [-1, -1, 1],
-        [-1, 100, -0.01], [100, -1, -100], [1 / 2, 1 / 3, 3 / 2], [1 / 3, 1 / 4, 4 / 3]
-    ], ids=['int1', 'smallint', 'float1', 'int2', 'int3', 'bugint', '0/', 'same_minus', 'minus/int', 'int/minus',
-            'fraction1', 'fraction2'])
-    def test_div(self, a, b, expect):
-        result = self.calc.div(a, b)
+    @pytest.mark.run(order=2)
+    @pytest.mark.parametrize('a,b,expect', get_datas()[2], ids=get_datas()[3])
+    def test_sub(self, get_calc, a, b, expect):
+        # calc=Calculator()
+        result = get_calc.sub(a, b)
+        assert result == expect
+
+    @pytest.mark.run(order=-1)
+    @pytest.mark.parametrize('a,b,expect', get_datas()[4], ids=get_datas()[5])
+    def test_mul(self, get_calc, a, b, expect):
+        # calc=Calculator()
+        result = get_calc.mul(a, b)
+        assert result == expect
+
+    @pytest.mark.run(order=1)
+    @pytest.mark.parametrize('a,b,expect', get_datas()[6], ids=get_datas()[7])
+    def test_div(self, get_calc, a, b, expect):
+        result = get_calc.div(a, b)
         assert result == expect
