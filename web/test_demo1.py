@@ -9,7 +9,7 @@ class Testdemo():
     def setup_method(self):
         options = Options()
         options.debugger_address = '127.0.0.1:9222'
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(options=options)
 
     def teardown_method(self):
         self.driver.quit()
